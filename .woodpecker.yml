@@ -1,0 +1,16 @@
+pipeline:
+  build:
+    image: python:3.11
+    commands:
+      - pip install -r requirements.txt
+      - echo "✅ Linting & Tests à venir ici"
+
+  dockerize:
+    image: plugins/docker
+    settings:
+      dockerfile: Dockerfile
+      repo: geodata_api
+      tags: latest
+    when:
+      branch:
+        - main
