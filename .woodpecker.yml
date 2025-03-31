@@ -19,12 +19,10 @@ steps:
       branch: [main]
 
   deploy:
-    image: docker
+    image: docker/compose:1.29.2
     commands:
-      - docker compose down
-      - docker compose up -d --build
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - docker-compose down
+      - docker-compose up -d --build
     when:
       event: [push]
       branch: [main]
