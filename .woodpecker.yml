@@ -1,12 +1,13 @@
+when:
+  event: [push, manual]
+  branch: [main, dev]
+
 steps:
   build:
     image: python:3.11
     commands:
       - pip install -r requirements.txt
       - echo "✅ Linting & Tests à venir ici"
-    when:
-      event: [push]
-      branch: [main]
 
   dockerize:
     image: plugins/docker
@@ -14,15 +15,19 @@ steps:
       dockerfile: Dockerfile
       repo: geodata_api
       tags: latest
-    when:
-      event: [push]
-      branch: [main]
 
-  deploy:
+  deploy-prod:
     image: docker/compose:1.29.2
     commands:
-      - docker-compose down
-      - docker-compose up -d --build
+      - docker-compose -f docker-compose.prod.yml up -d --build
     when:
-      event: [push]
       branch: [main]
+      event: [push, manual]
+
+  deploy-staging:
+    image: docker/compose:1.29.2
+    commands:
+      - docker-compose -f docker-compose.staging.yml up -d --build
+    when:
+      branch: [dev]
+      event: [push, manual]
