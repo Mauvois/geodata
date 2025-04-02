@@ -1,3 +1,5 @@
+# 🧹 Force cache reset - 2025-04-02 22:00
+
 when:
   event: [push, manual]
   branch: [main, dev]
