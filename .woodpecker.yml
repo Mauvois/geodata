@@ -6,7 +6,7 @@ steps:
   build:
     image: python:3.11
     commands:
-      - echo "🧪 Nouveau build à $(date)"
+      - echo "🧪 Nouveau build à $(date) pour test"
       - pip install -r requirements.txt
       - echo "✅ Linting & Tests à venir ici"
 
