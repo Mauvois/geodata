@@ -11,6 +11,9 @@ steps:
       - echo "🧪 Nouveau build à $(date) pour test"
       - pip install -r requirements.txt
       - echo "✅ Linting & Tests à venir ici"
+    when:
+    branch: [main, dev]
+    event: [push, manual]
 
   deploy-prod:
     image: docker/compose:1.29.2
