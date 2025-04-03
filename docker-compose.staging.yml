@@ -7,8 +7,20 @@ services:
     ports:
       - "8010:80"
     environment:
-    - DB_HOST=${DB_HOST}
-    - DB_PORT=${DB_PORT}
-    - DB_USER=${DB_USER}
-    - DB_PASSWORD=${DB_PASSWORD}
-    - DB_NAME=${DB_NAME}
+      DB_HOST: postgres_geodata  # Nom du conteneur PostgreSQL déjà lancé en local
+      DB_PORT: 5432
+      DB_USER: roger
+      DB_PASSWORD: motdepassefort
+      DB_NAME: geodata
+
+    networks:
+      - geodata_db_backend_net  # 👈 réseau existant
+    restart: unless-stopped
+
+networks:
+  backend_net:
+    external: true
+    name: geodata_db_backend_net
+
+    - sleep 5
+    - curl -s -o /dev/null -w "%{http_code}" http://localhost:8010/data | grep 200 || (echo "❌ Endpoint KO" && exit 1)
