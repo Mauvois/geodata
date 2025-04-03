@@ -14,9 +14,13 @@ services:
       DB_NAME: geodata
 
     networks:
-      - backend_net
+      - geodata_db_backend_net  # 👈 réseau existant
+    restart: unless-stopped
 
 networks:
   backend_net:
     external: true
     name: geodata_db_backend_net
+
+    - sleep 5
+    - curl -s -o /dev/null -w "%{http_code}" http://localhost:8010/data | grep 200 || (echo "❌ Endpoint KO" && exit 1)
