@@ -33,7 +33,7 @@ steps:
 
   deploy-staging:
     image: docker/compose:1.29.2
-    priviledged: true
+    privileged: true
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     commands:
