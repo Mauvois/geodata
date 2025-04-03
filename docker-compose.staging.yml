@@ -7,7 +7,7 @@ services:
     ports:
       - "8010:80"
     environment:
-      DB_HOST: db  # nom du conteneur PostgreSQL
+      DB_HOST: postgres_geodata  # Nom du conteneur PostgreSQL déjà lancé en local
       DB_PORT: 5432
       DB_USER: roger
       DB_PASSWORD: motdepassefort
@@ -17,24 +17,7 @@ services:
     networks:
       - backend_net
 
-  db:
-    image: postgis/postgis:15-3.3
-    container_name: postgres_geodata
-    restart: unless-stopped
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: roger
-      POSTGRES_PASSWORD: motdepassefort
-      POSTGRES_DB: geodata
-    volumes:
-      - pgdata_geodata:/var/lib/postgresql/data
-    networks:
-      - backend_net
-
-volumes:
-  pgdata_geodata:
-
 networks:
   backend_net:
-    external: false
+    external: true
+    name: geodata_db_backend_net
