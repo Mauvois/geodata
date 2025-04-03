@@ -1,9 +1,3 @@
-# 🧹 Force cache reset - 2025-04-02 22:00
-
-when:
-  event: [push, manual]
-  branch: [main, dev]
-
 steps:
   build:
     image: python:3.11
@@ -12,8 +6,8 @@ steps:
       - pip install -r requirements.txt
       - echo "✅ Linting & Tests à venir ici"
     when:
-    branch: [main, dev]
-    event: [push, manual]
+      branch: [main, dev]
+      event: [push, manual]
 
   deploy-prod:
     image: docker/compose:1.29.2
@@ -44,7 +38,6 @@ steps:
       - docker-compose -f docker-compose.staging.yml -p geodata_api_staging up -d --build --remove-orphans
       - sleep 5
       - curl -s -o /dev/null -w "%{http_code}" http://localhost:8010/data | grep 200 || (echo "❌ Endpoint KO" && exit 1)
-
     environment:
       DB_HOST:
         from_secret: DB_HOST
@@ -59,5 +52,3 @@ steps:
     when:
       branch: [dev]
       event: [push, manual]
-
-
