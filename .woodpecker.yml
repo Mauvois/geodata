@@ -37,7 +37,8 @@ steps:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     commands:
-      - docker-compose -f docker-compose.staging.yml up -d --build
+      - docker-compose -f docker-compose.staging.yml down --remove-orphans || true
+      - docker-compose -f docker-compose.staging.yml up -d --build --remove-orphans
     environment:
       DB_HOST:
         from_secret: DB_HOST
