@@ -12,8 +12,7 @@ services:
       DB_USER: roger
       DB_PASSWORD: motdepassefort
       DB_NAME: geodata
-    depends_on:
-      - db
+
     networks:
       - backend_net
 
