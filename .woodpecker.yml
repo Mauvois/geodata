@@ -1,4 +1,10 @@
 steps:
+  debug:
+    image: alpine
+    commands:
+      - echo "✅ Pipeline déclenché sur $CI_COMMIT_BRANCH"
+      - echo "Event déclencheur : $CI_PIPELINE_EVENT"
+
   build:
     image: python:3.11
     commands:
@@ -11,6 +17,7 @@ steps:
 
   deploy-prod:
     image: docker/compose:1.29.2
+    depends_on: [build]
     commands:
       - docker-compose -f docker-compose.prod.yml up -d --build
     environment:
@@ -31,6 +38,7 @@ steps:
   deploy-staging:
     image: docker/compose:1.29.2
     privileged: true
+    depends_on: [build]
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     commands:
