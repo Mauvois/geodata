@@ -20,19 +20,41 @@ def get_data():
             password=os.getenv("DB_PASSWORD", "motdepassefort")
         )
         cursor = conn.cursor(cursor_factory=RealDictCursor)
+        # cursor.execute("""
+        #     SELECT
+        #         t.nom AS territoire,
+        #         i.nom AS indicateur,
+        #         vi.date,
+        #         vi.valeur,
+        #         s.nom AS source,
+        #         cg.nom AS couche_geographique
+        #     FROM valeur_indicateur vi
+        #     JOIN territoire t ON vi.territoire_id = t.id
+        #     JOIN indicateur i ON vi.indicateur_id = i.id
+        #     LEFT JOIN source s ON i.source_id = s.id
+        #     LEFT JOIN couche_geographique cg ON cg.territoire_id = t.id;
+        # """)
+
         cursor.execute("""
             SELECT
-                t.nom AS territoire,
-                i.nom AS indicateur,
-                vi.date,
-                vi.valeur,
-                s.nom AS source,
-                cg.nom AS couche_geographique
-            FROM valeur_indicateur vi
-            JOIN territoire t ON vi.territoire_id = t.id
-            JOIN indicateur i ON vi.indicateur_id = i.id
-            LEFT JOIN source s ON i.source_id = s.id
-            LEFT JOIN couche_geographique cg ON cg.territoire_id = t.id;
+                tc.table_schema,
+                tc.table_name,
+                kcu.column_name,
+                ccu.table_schema AS foreign_table_schema,
+                ccu.table_name AS foreign_table_name,
+                ccu.column_name AS foreign_column_name
+            FROM
+                information_schema.table_constraints AS tc
+            JOIN
+                information_schema.key_column_usage AS kcu
+                ON tc.constraint_name = kcu.constraint_name
+            JOIN
+                information_schema.constraint_column_usage AS ccu
+                ON ccu.constraint_name = tc.constraint_name
+            WHERE
+                tc.constraint_type = 'FOREIGN KEY'
+            ORDER BY
+                tc.table_schema, tc.table_name;
         """)
         result = cursor.fetchall()
         cursor.close()
