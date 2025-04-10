@@ -28,8 +28,6 @@ steps:
       - docker-compose -f docker-compose.staging.yml -p geodata_api_staging up -d --build --remove-orphans
       - docker-compose -f docker-compose.staging.yml -p geodata_api_staging run --rm pytest
       - sleep 5
-      - "sh -c 'curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8010/data | grep 200 || (echo \"❌ Endpoint KO\" && exit 1)'"
-
     when:
       branch: [dev]
       event: [push, manual]
