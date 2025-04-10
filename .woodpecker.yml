@@ -38,7 +38,25 @@ steps:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     commands:
-      - docker-compose -f docker-compose.prod.yml up -d --build
+      - |
+        export DB_HOST=${DB_HOST} \
+        DB_PORT=${DB_PORT} \
+        DB_USER=${DB_USER} \
+        DB_PASSWORD=${DB_PASSWORD} \
+        DB_NAME=${DB_NAME} && \
+        docker-compose -f docker-compose.prod.yml -p geodata_api_prod down --remove-orphans || true && \
+        docker-compose -f docker-compose.prod.yml -p geodata_api_prod up -d --build --remove-orphans
+    environment:
+      DB_HOST:
+        from_secret: DB_HOST
+      DB_PORT:
+        from_secret: DB_PORT
+      DB_USER:
+        from_secret: DB_USER
+      DB_PASSWORD:
+        from_secret: DB_PASSWORD
+      DB_NAME:
+        from_secret: DB_NAME
     when:
       branch: [main]
       event: [push, manual]
