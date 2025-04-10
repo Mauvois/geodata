@@ -4,7 +4,6 @@ steps:
     commands:
       - echo "✅ Pipeline déclenché sur ${CI_COMMIT_BRANCH}"
       - "echo Event déclencheur : ${CI_PIPELINE_EVENT}"
-
     when:
       event: [push, manual, pull_request]
 
@@ -18,52 +17,18 @@ steps:
       branch: [main, dev]
       event: [push, manual]
 
-  test:
-    image: python:3.11
-    network: geodata_db_backend_net
-    commands:
-      - "echo 🔍 CI DEBUG : DB_HOST=${DB_HOST}"
-      - apt update && apt install -y dnsutils
-      - nslookup ${DB_HOST} || echo "❌ DNS lookup failed"
-      - pip install -r requirements.txt
-      - pytest test.py
-    environment:
-      DB_HOST:
-        from_secret: DB_HOST
-      DB_PORT:
-        from_secret: DB_PORT
-      DB_USER:
-        from_secret: DB_USER
-      DB_PASSWORD:
-        from_secret: DB_PASSWORD
-      DB_NAME:
-        from_secret: DB_NAME
-    when:
-      branch: [dev]
-      event: [push, manual]
-
   deploy-staging:
     image: docker/compose:1.29.2
     privileged: true
-    depends_on: [build, test]
+    depends_on: [build]
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     commands:
       - docker-compose -f docker-compose.staging.yml -p geodata_api_staging down --remove-orphans || true
       - docker-compose -f docker-compose.staging.yml -p geodata_api_staging up -d --build --remove-orphans
+      - docker-compose -f docker-compose.staging.yml -p geodata_api_staging run --rm pytest
       - sleep 5
       - curl -s -o /dev/null -w "%{http_code}" http://localhost:8010/data | grep 200 || (echo "❌ Endpoint KO" && exit 1)
-    environment:
-      DB_HOST:
-        from_secret: DB_HOST
-      DB_PORT:
-        from_secret: DB_PORT
-      DB_USER:
-        from_secret: DB_USER
-      DB_PASSWORD:
-        from_secret: DB_PASSWORD
-      DB_NAME:
-        from_secret: DB_NAME
     when:
       branch: [dev]
       event: [push, manual]
@@ -71,19 +36,10 @@ steps:
   deploy-prod:
     image: docker/compose:1.29.2
     depends_on: [build]
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
     commands:
       - docker-compose -f docker-compose.prod.yml up -d --build
-    environment:
-      DB_HOST:
-        from_secret: DB_HOST
-      DB_PORT:
-        from_secret: DB_PORT
-      DB_USER:
-        from_secret: DB_USER
-      DB_PASSWORD:
-        from_secret: DB_PASSWORD
-      DB_NAME:
-        from_secret: DB_NAME
     when:
       branch: [main]
       event: [push, manual]
