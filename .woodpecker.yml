@@ -22,6 +22,9 @@ steps:
     image: python:3.11
     network: geodata_db_backend_net
     commands:
+      - "echo 🔍 CI DEBUG : DB_HOST=${DB_HOST}"
+      - apt update && apt install -y dnsutils
+      - nslookup ${DB_HOST} || echo "❌ DNS lookup failed"
       - pip install -r requirements.txt
       - pytest test.py
     environment:
