@@ -2,8 +2,11 @@ steps:
   debug:
     image: alpine
     commands:
-      - echo "✅ Pipeline déclenché sur $CI_COMMIT_BRANCH"
-      - echo "Event déclencheur : $CI_PIPELINE_EVENT"
+      - echo '✅ Pipeline déclenché sur ${CI_COMMIT_BRANCH}'
+      - "echo Event déclencheur : ${CI_PIPELINE_EVENT}"
+
+
+
 
   build:
     image: python:3.11
