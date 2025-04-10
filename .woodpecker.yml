@@ -15,6 +15,27 @@ steps:
       branch: [main, dev]
       event: [push, manual]
 
+  test:
+    image: python:3.11
+    commands:
+      - pip install -r requirements.txt
+      - pytest test.py
+    environment:
+      DB_HOST:
+        from_secret: DB_HOST
+      DB_PORT:
+        from_secret: DB_PORT
+      DB_USER:
+        from_secret: DB_USER
+      DB_PASSWORD:
+        from_secret: DB_PASSWORD
+      DB_NAME:
+        from_secret: DB_NAME
+    when:
+      branch: [dev]
+      event: [push, manual]
+
+
   deploy-prod:
     image: docker/compose:1.29.2
     depends_on: [build]
