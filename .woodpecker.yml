@@ -38,15 +38,20 @@ steps:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     commands:
-      - docker-compose -f docker-compose.prod.yml -p geodata_api_prod down --remove-orphans || true
-      - export DB_HOST=${DB_HOST} DB_PORT=${DB_PORT} DB_USER=${DB_USER} DB_PASSWORD=${DB_PASSWORD} DB_NAME=${DB_NAME}
       - |
+        export DB_HOST="${DB_HOST}"
+        export DB_PORT="${DB_PORT}"
+        export DB_USER="${DB_USER}"
+        export DB_PASSWORD="${DB_PASSWORD}"
+        export DB_NAME="${DB_NAME}"
+
         if [ -z "$DB_HOST" ] || [ -z "$DB_USER" ]; then
           echo "❌ Secrets non définis, abandon."
           exit 1
         fi
-      - docker-compose -f docker-compose.prod.yml -p geodata_api_prod up -d --build --remove-orphans
 
+        docker-compose -f docker-compose.prod.yml -p geodata_api_prod down --remove-orphans || true
+        docker-compose -f docker-compose.prod.yml -p geodata_api_prod up -d --build --remove-orphans
     environment:
       DB_HOST:
         from_secret: DB_HOST
