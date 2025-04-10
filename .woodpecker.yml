@@ -20,6 +20,7 @@ steps:
 
   test:
     image: python:3.11
+    network: geodata_db_backend_net
     commands:
       - pip install -r requirements.txt
       - pytest test.py
