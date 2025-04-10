@@ -36,6 +36,7 @@ steps:
         from_secret: DB_NAME
     commands:
       - docker-compose -f docker-compose.staging.yml -p geodata_api_staging down --remove-orphans || true
+      - docker rm -f geodata_api_staging || true
       - docker-compose -f docker-compose.staging.yml -p geodata_api_staging up -d --build --remove-orphans
       - docker-compose -f docker-compose.staging.yml -p geodata_api_staging run --rm pytest
       - sleep 5
@@ -61,6 +62,7 @@ steps:
         from_secret: DB_NAME
     commands:
       - docker-compose -f docker-compose.prod.yml -p geodata_api_prod down --remove-orphans || true
+      - docker rm -f geodata_api_prod || true
       - docker-compose -f docker-compose.prod.yml -p geodata_api_prod up -d --build --remove-orphans
     when:
       branch: [main]
