@@ -2,11 +2,10 @@ steps:
   debug:
     image: alpine
     commands:
-      - echo '✅ Pipeline déclenché sur ${CI_COMMIT_BRANCH}'
-      - "echo Event déclencheur : ${CI_PIPELINE_EVENT}"
-
-
-
+      - echo "✅ Pipeline déclenché sur ${CI_COMMIT_BRANCH}"
+      - echo "Event déclencheur : ${CI_PIPELINE_EVENT}"
+    when:
+      event: [push, manual, pull_request]
 
   build:
     image: python:3.11
@@ -38,31 +37,10 @@ steps:
       branch: [dev]
       event: [push, manual]
 
-
-  deploy-prod:
-    image: docker/compose:1.29.2
-    depends_on: [build]
-    commands:
-      - docker-compose -f docker-compose.prod.yml up -d --build
-    environment:
-      DB_HOST:
-        from_secret: DB_HOST
-      DB_PORT:
-        from_secret: DB_PORT
-      DB_USER:
-        from_secret: DB_USER
-      DB_PASSWORD:
-        from_secret: DB_PASSWORD
-      DB_NAME:
-        from_secret: DB_NAME
-    when:
-      branch: [main]
-      event: [push, manual]
-
   deploy-staging:
     image: docker/compose:1.29.2
     privileged: true
-    depends_on: [build]
+    depends_on: [build, test]
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     commands:
@@ -83,4 +61,24 @@ steps:
         from_secret: DB_NAME
     when:
       branch: [dev]
+      event: [push, manual]
+
+  deploy-prod:
+    image: docker/compose:1.29.2
+    depends_on: [build]
+    commands:
+      - docker-compose -f docker-compose.prod.yml up -d --build
+    environment:
+      DB_HOST:
+        from_secret: DB_HOST
+      DB_PORT:
+        from_secret: DB_PORT
+      DB_USER:
+        from_secret: DB_USER
+      DB_PASSWORD:
+        from_secret: DB_PASSWORD
+      DB_NAME:
+        from_secret: DB_NAME
+    when:
+      branch: [main]
       event: [push, manual]
