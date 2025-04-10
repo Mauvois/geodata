@@ -1,11 +1,19 @@
-version: "3.9"
-
 services:
   api:
     build: .
     container_name: geodata_api_prod
     ports:
       - "8000:80"
-    env_file:
-      - env/.env.prod
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
     restart: unless-stopped
+    networks:
+      - geodata_db_backend_net
+
+networks:
+  geodata_db_backend_net:
+    external: true
