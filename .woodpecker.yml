@@ -35,16 +35,6 @@ steps:
       DB_NAME:
         from_secret: DB_NAME
     commands:
-      - export DB_HOST="${DB_HOST}"
-      - export DB_PORT="${DB_PORT}"
-      - export DB_USER="${DB_USER}"
-      - export DB_PASSWORD="${DB_PASSWORD}"
-      - export DB_NAME="${DB_NAME}"
-      - |
-        if [ -z "$DB_HOST" ] || [ -z "$DB_USER" ]; then
-          echo "❌ Secrets non définis, abandon."
-          exit 1
-        fi
       - docker-compose -f docker-compose.staging.yml -p geodata_api_staging down --remove-orphans || true
       - docker-compose -f docker-compose.staging.yml -p geodata_api_staging up -d --build --remove-orphans
       - docker-compose -f docker-compose.staging.yml -p geodata_api_staging run --rm pytest
@@ -70,16 +60,6 @@ steps:
       DB_NAME:
         from_secret: DB_NAME
     commands:
-      - export DB_HOST="${DB_HOST}"
-      - export DB_PORT="${DB_PORT}"
-      - export DB_USER="${DB_USER}"
-      - export DB_PASSWORD="${DB_PASSWORD}"
-      - export DB_NAME="${DB_NAME}"
-      - |
-        if [ -z "$DB_HOST" ] || [ -z "$DB_USER" ]; then
-          echo "❌ Secrets non définis, abandon."
-          exit 1
-        fi
       - docker-compose -f docker-compose.prod.yml -p geodata_api_prod down --remove-orphans || true
       - docker-compose -f docker-compose.prod.yml -p geodata_api_prod up -d --build --remove-orphans
     when:
