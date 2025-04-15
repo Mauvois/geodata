@@ -13,7 +13,7 @@ services:
       DB_PASSWORD: ${DB_PASSWORD}
       DB_NAME: ${DB_NAME}
     networks:
-      - geodata_db_backend_net
+      - db_backend_net
       - woodpecker_default
     restart: unless-stopped
 
@@ -30,11 +30,12 @@ services:
     depends_on:
       - api
     networks:
-      - geodata_db_backend_net
+      - db_backend_net
       - woodpecker_default
 
 networks:
-  geodata_db_backend_net:
+  db_backend_net:
     external: true
+    name: geodata_backend_net  # <- correspond au nom exact de ton `docker network ls`
   woodpecker_default:
     external: true
